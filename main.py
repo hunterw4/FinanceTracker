@@ -238,6 +238,9 @@ def pay():
             int_update = int(fund_update.funds) - bill_to_update.original_cost / 2
             fund_update.funds = int_update
             db.session.commit()
+        if "delete" in request.form:
+            db.session.delete(bill_to_update)
+            db.session.commit()
         elif "pay_in_full" in request.form:
             # Update bill_cost for payment in full
             bill_to_update.bill_cost = 0
@@ -300,6 +303,11 @@ def withdraw():
         db.session.commit()
         return redirect(url_for('home'))
     return render_template("withdraw.html")
+@app.route("/", methods=["GET","POST"])
+def chart():
+    # Need to pass the dynamic data from income, remaining funds, & savings to the index chart area.
+    pass
+
 
 if __name__ == "__main__":
     app.run(debug=True)

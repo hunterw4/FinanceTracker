@@ -213,7 +213,11 @@
                         <input type="hidden" name="id" value="{{ bill.id }}">
                       </form>
 
-                      <li><a class="dropdown-item" href="/delete">Delete Bill</a></li>
+                      <form action="{{ url_for('pay') }}" method="POST">
+                        <input type="hidden" name="delete" value="true">
+                        <button type="submit" class="dropdown-item">Delete Bill</button>
+                        <input type="hidden" name="id" value="{{ bill.id }}">
+                      </form>
                     </ul>
                   </div>
 
