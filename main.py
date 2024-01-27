@@ -162,6 +162,26 @@ def home():
     icon, p_diff, t_diff = difference(latest_check_int, previous_int, t_diff="")
     funds_icon, funds_diff, t_diff_funds = difference(latest_funds.funds, previous_funds, t_diff="")
     savings_icon, savings_diff, t_diff_savings = difference(total_saved, previous_saving_int, t_diff="")
+    chart_data = {
+        'savings': [],
+        'revenue': [],
+        'remaining_funds': [],
+        'date': []
+    }
+    saving_hist = db.session.query(Saving)
+    revenue_hist = db.session.query(Income)
+    remaining_funds_hist = db.session.query(RemainingFunds)
+    for bal in saving_hist:
+        savings_value = bal.total_savings.replace(',', '')
+        chart_data['savings'].append(bal.total_savings)
+        chart_data['date'].append(bal.date)
+    for rev in revenue_hist:
+        revenue_value = rev.check.replace(',', '')
+        chart_data['revenue'].append(revenue_value)
+    for funds in remaining_funds_hist:
+        chart_data['remaining_funds'].append(funds.funds)
+    print(chart_data)
+
     if request.method == 'POST':
         bills = Bill.query.all()
 
@@ -179,7 +199,7 @@ def home():
     return render_template("index.html", latest_income=latest_check, total_saved=total_saved_str,
                            total_bills=total_bills, remaining_balance=remaining_funds_str, icon=icon, p_diff=p_diff, t_diff=t_diff,
                            funds_icon=funds_icon,funds_diff=funds_diff, t_diff_funds=t_diff_funds, savings_icon=savings_icon,
-                           savings_diff=savings_diff, t_diff_savings=t_diff_savings)
+                           savings_diff=savings_diff, t_diff_savings=t_diff_savings, chart_data=chart_data)
 
 
 @app.route("/add", methods=["GET", "POST"])
@@ -303,10 +323,6 @@ def withdraw():
         db.session.commit()
         return redirect(url_for('home'))
     return render_template("withdraw.html")
-@app.route("/", methods=["GET","POST"])
-def chart():
-    # Need to pass the dynamic data from income, remaining funds, & savings to the index chart area.
-    pass
 
 
 if __name__ == "__main__":
