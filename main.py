@@ -96,6 +96,7 @@ with app.app_context():
 with app.app_context():
     latest_savings = db.session.query(Saving).order_by(Saving.id.desc()).first()
 
+    #Previous saving solely to find the percentage diff
     previous_saving = (
         db.session.query(Saving)
         .order_by(Saving.id.desc())
@@ -110,7 +111,7 @@ with app.app_context():
         savings_str = latest_savings.savings.replace(',', '')
         total_savings_str = latest_savings.total_savings.replace(',', '')
 
-        total_saved = int(savings_str) + int(total_savings_str)
+        total_saved = int(total_savings_str)
 
         # Format the total_saved integer back to a string with commas
         total_saved_str = '{:,}'.format(total_saved)
@@ -173,14 +174,13 @@ def home():
     remaining_funds_hist = db.session.query(RemainingFunds)
     for bal in saving_hist:
         savings_value = bal.total_savings.replace(',', '')
-        chart_data['savings'].append(bal.total_savings)
+        chart_data['savings'].append(savings_value)
         chart_data['date'].append(bal.date)
     for rev in revenue_hist:
         revenue_value = rev.check.replace(',', '')
         chart_data['revenue'].append(revenue_value)
     for funds in remaining_funds_hist:
         chart_data['remaining_funds'].append(funds.funds)
-    print(chart_data)
 
     if request.method == 'POST':
         bills = Bill.query.all()
@@ -286,7 +286,7 @@ def savings():
         added_savings = Saving(
             date=today,
             savings=request.form["savings"],
-            total_savings=total_saved
+            total_savings=total_saved + int(request.form['savings'])
         )
         db.session.add(added_savings)
         db.session.commit()
