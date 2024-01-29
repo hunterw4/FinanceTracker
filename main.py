@@ -283,13 +283,24 @@ def pay():
 def savings():
     # Using basically the same exact form and html elements from the income section and reusing it for the savings DB / card
     if request.method == 'POST':
-        added_savings = Saving(
-            date=today,
-            savings=request.form["savings"],
-            total_savings=total_saved + int(request.form['savings'])
-        )
-        db.session.add(added_savings)
-        db.session.commit()
+        raw_saving = request.form["savings"]
+        if "," in raw_saving:
+            clean_saving = raw_saving.replace(',', '')
+            added_savings = Saving(
+                date=today,
+                savings=clean_saving,
+                total_savings=total_saved + int(clean_saving)
+            )
+            db.session.add(added_savings)
+            db.session.commit()
+        if "," not in raw_saving:
+            added_savings = Saving(
+                date=today,
+                savings=request.form["savings"],
+                total_savings=total_saved + int(request.form['savings'])
+            )
+            db.session.add(added_savings)
+            db.session.commit()
         # Subtracting the contributed savings from the overall remaining funds
         saving_form = request.form["savings"]
         string_removal = saving_form.replace(',', '')
