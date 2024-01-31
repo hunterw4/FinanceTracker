@@ -105,10 +105,10 @@ with app.app_context():
         .first()  # Execute the query and fetch the result
     )
 
-    last_saving = previous_saving.savings
+    last_saving = previous_saving.total_savings
     if latest_savings:
         # Remove commas, convert to integers, and then format with commas
-        savings_str = latest_savings.savings.replace(',', '')
+        savings_str = latest_savings.total_savings.replace(',', '')
         total_savings_str = latest_savings.total_savings.replace(',', '')
 
         total_saved = int(total_savings_str)
